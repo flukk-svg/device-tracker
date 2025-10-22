@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบเก็บข้อมูลอุปกรณ์คอมพิวเตอร์</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+
+<div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md">
+  <h1 class="text-xl font-semibold mb-4 text-center">📋 เพิ่มข้อมูลอุปกรณ์</h1>
+
+  <form id="deviceForm" class="space-y-3">
+    <input type="text" name="name" placeholder="ชื่ออุปกรณ์" required class="w-full p-2 border rounded">
+    <input type="text" name="type" placeholder="ประเภท" required class="w-full p-2 border rounded">
+    <input type="text" name="model" placeholder="รุ่น" required class="w-full p-2 border rounded">
+    <input type="text" name="brand" placeholder="ยี่ห้อ" required class="w-full p-2 border rounded">
+    <input type="text" name="status" placeholder="สถานะ (เช่น ใช้งาน/เสีย/รอซ่อม)" required class="w-full p-2 border rounded">
+    <input type="text" name="serial" placeholder="Serial Number" required class="w-full p-2 border rounded">
+
+    <label class="block text-gray-700 font-medium mt-2">📷 ถ่ายรูปหรือเลือกรูปภาพ</label>
+    <input type="file" id="photo" accept="image/*" capture="camera" class="w-full p-2 border rounded bg-gray-50">
+
+    <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">บันทึกข้อมูล</button>
+  </form>
+
+  <p id="result" class="text-center text-green-600 font-medium mt-3"></p>
+</div>
+
+<script>
+document.getElementById("deviceForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  const form = e.target;
+  const result = document.getElementById("result");
+
+  const formData = new FormData(form);
+  const photoFile = document.getElementById("photo").files[0];
+  if (photoFile) {
+    formData.append("photo", photoFile);
+  }
+
+  result.textContent = "⏳ กำลังอัปโหลด...";
+
+  try {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbw4gD03Duh5Ck30kG7CjXNAjnHZuKSl0_S6IW7XEdcGy1vzVtHpti3iCCoCvq6JmSBw9A/exec", {
+      method: "POST",
+      body: formData,
+    });
+
+    const text = await response.text();
+    result.textContent = "✅ บันทึกข้อมูลเรียบร้อยแล้ว!";
+    form.reset();
+  } catch (error) {
+    console.error(error);
+    result.textContent = "❌ เกิดข้อผิดพลาดในการบันทึก";
+  }
+});
+</script>
+</body>
+</html>
